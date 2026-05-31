@@ -1,12 +1,23 @@
 import { z } from "zod";
 import { Sandbox} from "@e2b/code-interpreter";
-import { gemini, createAgent, createTool, createNetwork, Tool, Message, createState } from "@inngest/agent-kit";
+import { openai, createAgent, createTool, createNetwork, Tool, Message, createState } from "@inngest/agent-kit";
 
 import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompt";
 
 import { inngest } from "./client";
 import { getSandbox, lastAssistantTextMessageContent } from "./util";
 import { prisma } from "@/lib/db";
+
+const nvidiaModel = openai({
+  model: "meta/llama-3.3-70b-instruct",
+  apiKey: process.env.NVIDIA_API_KEY,
+  baseUrl: "https://integrate.api.nvidia.com/v1",
+  defaultParameters: {
+    temperature: 1,
+    top_p: 0.95,
+    max_completion_tokens: 16384,
+  },
+});
 
 interface AgentState{
   summary: string,
@@ -21,6 +32,7 @@ export const codeAgentFunctions = inngest.createFunction(
       const sandbox = await Sandbox.create("vibe-nextjs-test-8788");
       
       await sandbox.setTimeout(60_000 * 10 * 3);
+      await sandbox.commands.run("npm config set strict-ssl false");
       return sandbox.sandboxId;
     });
 
@@ -64,9 +76,7 @@ export const codeAgentFunctions = inngest.createFunction(
       name: "code-agent",
       description: "An expert coding agent",
       system: PROMPT,
-      model: gemini({
-        model: "gemini-2.0-flash",  
-      }),
+      model: nvidiaModel,
       tools: [
         createTool({
           name: "terminal",
@@ -81,6 +91,7 @@ export const codeAgentFunctions = inngest.createFunction(
               try{
                 const sandbox = await getSandbox(sandboxId);
                 const result = await sandbox.commands.run(command, {
+                  timeoutMs: 120_000,
                   onStdout: (data: string) => {
                     buffers.stdout += data;
                   },
@@ -197,18 +208,14 @@ export const codeAgentFunctions = inngest.createFunction(
       name: "fragment-title-generator",
       description: "A fragment title generator",
       system: FRAGMENT_TITLE_PROMPT,
-      model: gemini({
-        model: "gemini-2.0-flash",
-      })
+      model: nvidiaModel
     });
 
      const responseGenerator = createAgent({
       name: "response-generator",
       description: "A response generator",
       system: RESPONSE_PROMPT,
-      model: gemini({
-        model: "gemini-2.0-flash",
-      })
+      model: nvidiaModel
     });
 
     const {output: fragmentTitleOutput} = await fragmentTitleGenerator.run(result.state.data.summary);

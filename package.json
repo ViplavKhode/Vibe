@@ -7,14 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+<<<<<<< HEAD
     "postinstall": "prisma generate"
+=======
+    "postinstall": "prisma generate && node scripts/patch-inngest.cjs"
+>>>>>>> 4c955af (Update Ai model and fix errors)
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.0",
     "@clerk/themes": "^2.2.51",
     "@e2b/code-interpreter": "^1.5.1",
     "@hookform/resolvers": "^5.2.1",
-    "@inngest/agent-kit": "^0.8.3",
+    "@inngest/agent-kit": "^0.12.1",
     "@prisma/client": "^6.10.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -52,7 +56,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "inngest": "^3.40.2",
+    "inngest": "^3.54.0 ",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.542.0",
     "next": "15.3.8",
