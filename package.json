@@ -7,11 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-<<<<<<< HEAD
-    "postinstall": "prisma generate"
-=======
     "postinstall": "prisma generate && node scripts/patch-inngest.cjs"
->>>>>>> 4c955af (Update Ai model and fix errors)
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.0",
