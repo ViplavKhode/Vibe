@@ -37,8 +37,13 @@ export const Usage = ({points, msBeforeNext}: Props)=>{
                     <p className="text-sm">
                         {points} {hasProAccess ? "": "free"} credits remaining
                     </p>
+
                     <p className="text-xs text-muted-foreground">
                         Reset in {" "} {resetTime}
+                    </p>
+
+                    <p className="text-xs">
+                        Sorry, My Free AI Model takes a lot of time.
                     </p>
                 </div>
                 {!hasProAccess &&
